@@ -1,0 +1,9 @@
+#line 1 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\.vscode\\arduino.json"
+{
+    "port": "COM3",
+    "configuration": "JTAGAdapter=default,CDCOnBoot=default,PartitionScheme=default,CPUFreq=160,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none,EraseFlash=none,ZigbeeMode=default",
+    "board": "esp32:esp32:dfrobot_firebeetle2_esp32c6",
+    "programmer": "esptool",
+    "sketch": "Main_AP_Motor.ino",
+    "output": "E:/Projects/Holo3D_Base/output"
+}

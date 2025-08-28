@@ -1,0 +1,9 @@
+{
+  "additionalFiles": "..\\..\\..,..\\..\\..",
+  "compiler.optimization_flags": "-Os",
+  "customBuildProperties": "",
+  "fqbn": "esp32:esp32:dfrobot_firebeetle2_esp32c6:JTAGAdapter=default,CDCOnBoot=default,PartitionScheme=default,CPUFreq=160,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none,EraseFlash=none,ZigbeeMode=default",
+  "hardwareFolders": "C:\\Users\\stefa\\AppData\\Local\\Arduino15\\packages",
+  "otherLibrariesFolders": "C:\\Users\\stefa\\Documents\\Arduino\\libraries",
+  "sketchLocation": "E:\\Projects\\Holo3D_Base\\Main_AP_Motor"
+}
