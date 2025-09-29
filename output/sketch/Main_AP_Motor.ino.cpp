@@ -6,18 +6,30 @@
 #include <ESPAsyncWebServer.h>
 #include <Arduino_JSON.h>
 
+//Pin definitions
+uint8_t SpeedSensorPin = 1;
+
+//Speed Control
+volatile bool bladePassed = false;
+int nBladePasses = 0; //Count number of times the blade has passed
+hw_timer_t * TIM0; //Setup hardware timer for accurate and precise timing
+int currFanSpeed = 0; //rpm of the fan currently
+
 //Motor Control
 const int motorPWM = 8;
-uint8_t motorSpeed = 100; //0 - 255
+
 //PWM Settings
 const int freq = 8000; //Frequency [Hz]
 const int resolution = 8; //bits
 
+//User command variables
+uint8_t msgSpeed = 0; //Fan Speed 0 - 100
 
 const int FAN_ID = 1; //Set fan ID
 const int Monitor_LED = D13;
 bool Monitor_LED_State;
 int tblink = 0; 
+int tReport = 0;
 bool Client_Connected = false;
 
 //WiFi Name and Password
@@ -31,12 +43,38 @@ IPAddress subnet(255, 255, 255, 0); // Subnet mask
 AsyncWebSocket ws("/ws"); //Create a WebSocket object
 
 // put function declarations here:
+void SetupInterrupts();
+
 void initWiFiAP(); //Initialize WiFi
 void initWebSocket(); //Initialize WebSocket
 void LED_Blink(); //Used to check if board is reponsive/active by monitoriung the built in D13 LED flashing
 void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len); //WebSocket Event
+void setFanSpeed(uint8_t speed);
+
+void handleBladeInterrupt();
+void handleTIM0();
+
+#line 68 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
+void setup();
+#line 93 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
+void loop();
+#line 56 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
+void SetupInterrupts(){
+  //Speed sensor (Hall-effect sensor)
+  pinMode(SpeedSensorPin, INPUT_PULLDOWN); //Force floating pin to ground
+  attachInterrupt(digitalPinToInterrupt(SpeedSensorPin), handleBladeInterrupt, RISING);
+
+  //Timer
+  TIM0 = timerBegin(25600); //3125 Hz timer (Timer_number, prescaler, upcount?)
+  timerAttachInterrupt(TIM0, handleTIM0); //Timer, function to call
+  timerAlarm(TIM0, 3125, true, 0); //Timer, ARR, ARR_Enabled?, number of times? (0 = infinite)
+}
+
 
 void setup() {
+  //Enable Timer and Interrupts
+  SetupInterrupts();
+
   //PWM & Motor Control Setup
   ledcAttach(motorPWM, freq, resolution);
 
@@ -55,19 +93,19 @@ void setup() {
   digitalWrite(Monitor_LED, LOW);
   Monitor_LED_State = false;
 
-
-
   server.begin();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //PWM duty cycle
-  ledcWrite(motorPWM, motorSpeed); //Duty Cycle (0-255)
-
-  if (!Client_Connected){
-  LED_Blink();
+  if (Client_Connected){
+    if (millis() - tReport > 2000) {
+      tReport = millis();
+      ws.textAll("RPM" + String( analogRead(SpeedSensorPin)) + String());
+    }
   }
+
+  
   
 }
 
@@ -85,11 +123,8 @@ void initWebSocket(){
 }
 
 void LED_Blink(){
-if (millis() - tblink > 500) {
-    tblink = millis();
     Monitor_LED_State = !Monitor_LED_State;
     digitalWrite(Monitor_LED, Monitor_LED_State ? HIGH : LOW);
-}
 }
 
 void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
@@ -100,6 +135,9 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
     ws.textAll("Connected");
   } else if (type == WS_EVT_DISCONNECT) {
     Serial.println("WebSocket client disconnected");
+    //User Disconnected
+    setFanSpeed(0); //Switch off fan immediately if user disconnected!
+
     Client_Connected = false;
   } else if (type == WS_EVT_DATA) {
     Serial.printf("WebSocket data received: %.*s\n", len, data);
@@ -117,6 +155,31 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
       Serial.println("Turning OFF");
       ws.textAll("Turning OFF");
       digitalWrite(Monitor_LED, LOW);
+    } else if (msg.startsWith("MOTOR_SPEED:") ){
+      String msgValue = msg.substring(strlen("MOTOR_SPEED:"));
+      msgSpeed = msgValue.toInt(); //0 - 255
+      setFanSpeed(msgSpeed);
     }
   }
+}
+
+void setFanSpeed(uint8_t speed){
+  ledcWrite(motorPWM, speed); //Duty Cycle (0-255)
+}
+
+//Function to count number of blade passes
+void handleBladeInterrupt(){
+  bladePassed = true;
+  nBladePasses++;
+}
+
+//Function to calculate the current fan speed at consistent/known intervals
+void handleTIM0(){
+
+  if (!Client_Connected){ //Check to see if timer initialised correctly
+  LED_Blink();
+  }
+
+  currFanSpeed = nBladePasses;        //get the fan speed (divide by time 1s)
+  nBladePasses = 0; //Reset counter
 }
