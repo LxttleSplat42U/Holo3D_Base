@@ -143,6 +143,7 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
     Serial.println("WebSocket client disconnected");
     //User Disconnected
     setFanSpeed(0); //Switch off fan immediately if user disconnected!
+    ws.textAll("MOTOR_SPEED:0"); //Send command to wtich off all other fans as well
 
     Client_Connected = false;
   } else if (type == WS_EVT_DATA) {
@@ -153,19 +154,16 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
       msg += (char) data[i];
     }
 
-    if (msg == "LED_ON"){
-      Serial.println("Turning ON");
-      ws.textAll("Turning ON");
-      digitalWrite(Monitor_LED, HIGH);
-    } else if (msg == "LED_OFF"){
-      Serial.println("Turning OFF");
-      ws.textAll("Turning OFF");
-      digitalWrite(Monitor_LED, LOW);
-    } else if (msg.startsWith("MOTOR_SPEED:") ){
+    ws.textAll(msg); //Forward message to all clients
+
+    if (msg.startsWith("MOTOR_SPEED:") ){
       String msgValue = msg.substring(strlen("MOTOR_SPEED:"));
       msgSpeed = msgValue.toInt(); //0 - 255
       setFanSpeed(msgSpeed);
-    }
+    } 
+    
+    
+    
   }
 }
 

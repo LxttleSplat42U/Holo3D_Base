@@ -5,15 +5,27 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <Arduino_JSON.h>
+#include "driver/pulse_cnt.h" //For PCNT
+#include "esp_err.h"        //  ensures ESP_ERROR_CHECK is defined otherwise an error occurs for some reason
+
+const int FAN_ID = 1; //Set fan ID
+
 
 //Pin definitions
 uint8_t SpeedSensorPin = 1;
 
-//Speed Control
+//Speed RPM [Position Sensor]
+#define SPEED_SENSOR_PIN 1      // Speed Sensor pin number
+#define SAMPLE_INTERVAL_US 1000  // 1 ms = 1000 Hz sampling
+const int LOW_TH  = 3100;  // ADC level if no blade passed
+const int HIGH_TH = 3120;  // ADC level if blade passed
+
 volatile bool bladePassed = false;
-int nBladePasses = 0; //Count number of times the blade has passed
+volatile int nBladePasses = 0; //Count number of times the blade has passed
+
 hw_timer_t * TIM0; //Setup hardware timer for accurate and precise timing
 int currFanSpeed = 0; //rpm of the fan currently
+
 
 //Motor Control
 const int motorPWM = 8;
@@ -25,7 +37,7 @@ const int resolution = 8; //bits
 //User command variables
 uint8_t msgSpeed = 0; //Fan Speed 0 - 100
 
-const int FAN_ID = 1; //Set fan ID
+
 const int Monitor_LED = D13;
 bool Monitor_LED_State;
 int tblink = 0; 
@@ -54,15 +66,13 @@ void setFanSpeed(uint8_t speed);
 void handleBladeInterrupt();
 void handleTIM0();
 
-#line 68 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
+#line 78 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
 void setup();
-#line 93 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
+#line 105 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
 void loop();
-#line 56 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
+#line 68 "E:\\Projects\\Holo3D_Base\\Main_AP_Motor\\Main_AP_Motor.ino"
 void SetupInterrupts(){
-  //Speed sensor (Hall-effect sensor)
-  pinMode(SpeedSensorPin, INPUT_PULLDOWN); //Force floating pin to ground
-  attachInterrupt(digitalPinToInterrupt(SpeedSensorPin), handleBladeInterrupt, RISING);
+
 
   //Timer
   TIM0 = timerBegin(25600); //3125 Hz timer (Timer_number, prescaler, upcount?)
@@ -72,11 +82,13 @@ void SetupInterrupts(){
 
 
 void setup() {
-  //Enable Timer and Interrupts
-  SetupInterrupts();
-
   //PWM & Motor Control Setup
+  pinMode(motorPWM, OUTPUT);  //Ensure Motor is OFF
+  digitalWrite(motorPWM, LOW);
   ledcAttach(motorPWM, freq, resolution);
+
+  //Enable Timer and Interrupts
+  SetupInterrupts();  
 
   // put your setup code here, to run once:
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -98,12 +110,12 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (Client_Connected){
-    if (millis() - tReport > 2000) {
-      tReport = millis();
-      ws.textAll("RPM" + String( analogRead(SpeedSensorPin)) + String());
-    }
-  }
+  // if (Client_Connected){
+  //   if (millis() - tReport > 2000) {
+  //     tReport = millis();
+  //     ws.textAll("RPM" + String( analogRead(SpeedSensorPin)) + "---" + String(currFanSpeed));
+  //   }
+  // }
 
   
   
@@ -147,19 +159,16 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
       msg += (char) data[i];
     }
 
-    if (msg == "LED_ON"){
-      Serial.println("Turning ON");
-      ws.textAll("Turning ON");
-      digitalWrite(Monitor_LED, HIGH);
-    } else if (msg == "LED_OFF"){
-      Serial.println("Turning OFF");
-      ws.textAll("Turning OFF");
-      digitalWrite(Monitor_LED, LOW);
-    } else if (msg.startsWith("MOTOR_SPEED:") ){
+    ws.textAll(msg); //Forward message to all clients
+
+    if (msg.startsWith("MOTOR_SPEED:") ){
       String msgValue = msg.substring(strlen("MOTOR_SPEED:"));
       msgSpeed = msgValue.toInt(); //0 - 255
       setFanSpeed(msgSpeed);
-    }
+    } 
+    
+    
+    
   }
 }
 
@@ -167,19 +176,22 @@ void setFanSpeed(uint8_t speed){
   ledcWrite(motorPWM, speed); //Duty Cycle (0-255)
 }
 
-//Function to count number of blade passes
-void handleBladeInterrupt(){
-  bladePassed = true;
-  nBladePasses++;
-}
-
 //Function to calculate the current fan speed at consistent/known intervals
 void handleTIM0(){
+
+  int sensorValue = analogRead(SPEED_SENSOR_PIN);
+
+  if (!bladePassed && sensorValue >= HIGH_TH){
+    bladePassed = true;
+    nBladePasses++;
+  } else if (bladePassed && sensorValue <= LOW_TH){
+    bladePassed = false;
+  }
 
   if (!Client_Connected){ //Check to see if timer initialised correctly
   LED_Blink();
   }
 
   currFanSpeed = nBladePasses;        //get the fan speed (divide by time 1s)
-  nBladePasses = 0; //Reset counter
+//nBladePasses = 0; //Reset counter
 }
