@@ -19,16 +19,17 @@ ESPAsyncWebServer by ESP32Async 3.8.1
 # Default configurations used (can be changed if needed, please see the final heading)
 ## Hardware
 <img width="993" height="831" alt="image" src="https://github.com/user-attachments/assets/cc09d603-2ad0-4773-a3cb-e7febf1d5e96" />
+
 ## Software
-Creates a open WiFi access point "Holo3D" with a WebSockets server accessible at 192.168.4.1 on port 80. (can be changed in "HarwareSoftwareConfig.ino" or "WiFiConfig.h" for more advanced functionality)
+Creates a open WiFi access point "Holo3D" with a WebSockets server accessible at 192.168.4.1 on port 80. (can be changed in "HardwareSoftwareConfig.ino" or "WiFiConfig.h" for more advanced functionality)
 
 # If a different hardware configuration is being used
-Edit the "HarwareSoftwareConfig.ino" file and change the pin assignement etc. to match the new hardware configuration.
-Ex. If the speed/Hall-effect sensor is connected to a diferent pin than pin 1.
+Edit the "HardwareSoftwareConfig.ino" file and change the pin assignement etc. to match the new hardware configuration.
+Ex. If the speed/Hall-effect sensor is connected to a different pin other than pin 1.
 
 This file can also be used to change the WiFi access point name (ssid) and password if needed.
 
-If more configuration is required, such s changing the WebSockets IP address and port/ URL. "WiFiConfig.h" can be edited to the new required values.
+If more configuration is required, such as changing the WebSockets IP address and port/URL. "WiFiConfig.h" can be edited to the new required values.
 
 
 
