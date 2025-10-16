@@ -1,6 +1,9 @@
 # Holo3D_Base
 Main Fan Base ESP32 (C6)
 
+# Video Showcase #1
+https://github.com/user-attachments/assets/fd77e25b-0bb4-49c2-8a1c-dbb2ccc4506e
+
 # Steps on how to use
 ### Setting up the board
 Arduino preferences board manager URL: https://espressif.github.io/arduino-esp32/package_esp32_index.json
@@ -11,8 +14,7 @@ Arduino preferences board manager URL: https://espressif.github.io/arduino-esp32
 AsyncTCP by ESP32Async 3.4.9
 
 ESPAsyncWebServer by ESP32Async 3.8.1
-# Video Showcase #1
-https://github.com/user-attachments/assets/fd77e25b-0bb4-49c2-8a1c-dbb2ccc4506e
+
 
 # Default configurations used (can be changed if needed, please see the final heading)
 ## Hardware
