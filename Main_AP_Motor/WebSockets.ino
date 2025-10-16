@@ -1,20 +1,22 @@
 #include <WebSockets.h>
 
+bool Client_Connected = false;
+
 void initWebSocket() {
-  ws.onEvent(onWebEvent);  //Attach the WebSocket event handler
-  server.addHandler(&ws);  //Add the WebSocket handler to the server
+  ws.onEvent(onWebEvent);  // Attach the WebSocket event handler
+  server.addHandler(&ws);  // Add the WebSocket handler to the server
 }
 
 void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
-  //Handle WebSocket events here
+  // Handle WebSocket events here
   if (type == WS_EVT_CONNECT) {
     Serial.printf("WebSocket client #%u connected, waiting for registration...\n", client->id());
     Client_Connected = true;
 
   } else if (type == WS_EVT_DISCONNECT) {
-    //User Disconnected
-    setFanSpeed(0);    //Switch off fan immediately if user disconnected!
-    ws.textAll("-1");  //Send shutdown command to all clients
+    // User Disconnected
+    setFanSpeed(0);           // Switch off fan immediately if user disconnected!
+    ws.textAll("-1");         // Send shutdown command to all clients
     Client_Connected = false;
 
     Serial.printf("WebSocket client #%u disconnected\n", client->id());
@@ -38,7 +40,13 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
       msg += (char)data[i];
     }
 
-    if (msg.startsWith("MOTOR_SPEED:")) {  //Set motor speed
+    if (msg == "-1") // Shutdown command received
+    {
+     shutDownSystem(); // Shutdown all fan clients
+     shutDown = true;
+    } else if (msg == "RESTART"){ // Stop Shutdown routine in main loop
+      shutDown = false;      
+    } else if (msg.startsWith("MOTOR_SPEED:")) {  //Set motor speed
       String msgValue = msg.substring(strlen("MOTOR_SPEED:"));
       int msgSpeed = msgValue.toInt();  //0 - 255
       setFanSpeed(msgSpeed);
