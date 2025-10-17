@@ -1,4 +1,6 @@
 // Change the following based on the hardware and desired software configuration
+const int userID = 255;               // Mobile companion app ID
+
 const int Monitor_LED = D13;          // Built in microcontroller LED
 const int motorPWM = 8;               // PWM Motor Control PIN
 const int RPM_SENSOR = 1;             // Pin speed/rpm sensor or circuit is connected to

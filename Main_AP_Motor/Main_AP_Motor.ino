@@ -17,7 +17,6 @@ void setup() {
 
   //PWM & Motor Control Setup
   setupPWM();
-
   
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/html", "<!DOCTYPE html><html><body><h2>ESP32 WebSocket</h2><script>const socket = new WebSocket('ws://' + location.hostname + '/ws'); socket.onopen = () => { console.log('Connected'); socket.send('Hi from browser'); };</script></body></html>");
@@ -29,7 +28,7 @@ void setup() {
   //Set initial Built
   pinMode(Monitor_LED, OUTPUT);
   digitalWrite(Monitor_LED, LOW);
-
+  Serial.println("Test:");
   server.begin(); // Begin websocket servers
 
   // Setup RPM Measurement interrupts and timers
@@ -51,7 +50,8 @@ void loop() {
     
     //printConnectedDevices();
     // sendToClient(11, "Analog: " + String(analogRead(RPM_SENSOR)) + "RPM: " + String(nbladePasses));
-    sendToClient(11, "RPM: " + String(avgRPM) + " || Blade passes: " + String(nbladePasses));
+    sendToClient(11, "RPM: " + String(avgRPM) + ":");
+    sendToClient(userID, "11:RPM: " + String(avgRPM) + ":");
     // sendToClient(11, "min: " + String(rpm_min) + "max: " + String(rpm_max));
   }
 

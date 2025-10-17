@@ -66,8 +66,19 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
       // Split message ID:ACTION:VALUE
       int firstColon = msg.indexOf(':');
       int secondColon = msg.indexOf(':', firstColon + 1);
+      int thirdColon = msg.indexOf(':', secondColon + 1);
+
 
       //Check if ID listed
+      if (thirdColon > 0 && secondColon > 0){ // Safety
+        int targetClientID = msg.substring(0, firstColon).toInt();
+        String command = msg.substring(firstColon, secondColon);
+
+        if (command == "RPM"){ // if command RPM forward to fan blade and user device for displaying
+          sendToClient(userID, msg);        // Forward to mobile application
+          // sendToClient(targetClientID, msg); // Forward to target client
+        }
+      }
       if (firstColon > 0) {
         int targetClientID = msg.substring(0, firstColon).toInt();
 
@@ -75,6 +86,7 @@ void onWebEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTy
           // This is a targeted message - send only to specific device
           Serial.printf("Forwarding message to device ID %d: %s\n", targetClientID, msg.c_str());
           sendToClient(targetClientID, msg);
+          sendToClient(userID, msg); // Also forward to mobile companion app [user]
           return;
         }
       }
