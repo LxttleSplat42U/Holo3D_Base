@@ -18,7 +18,8 @@ ESPAsyncWebServer by ESP32Async 3.8.1
 
 # Default configurations used (can be changed if needed, please see the final heading)
 ## Hardware
-<img width="993" height="831" alt="image" src="https://github.com/user-attachments/assets/cc09d603-2ad0-4773-a3cb-e7febf1d5e96" />
+![Hardware configuration Final_page-0001](https://github.com/user-attachments/assets/2976acf9-732c-4617-89a8-1aaad24e6aa9)
+
 
 ## Software
 Creates a open WiFi access point "Holo3D" with a WebSockets server accessible at 192.168.4.1 on port 80. (can be changed in "HardwareSoftwareConfig.ino" or "WiFiConfig.h" for more advanced functionality)
