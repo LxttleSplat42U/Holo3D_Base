@@ -1,10 +1,7 @@
 # Holo3D_Base
 Main Fan Base ESP32 (C6)
 
-# Video Showcase #1
-https://github.com/user-attachments/assets/fd77e25b-0bb4-49c2-8a1c-dbb2ccc4506e
-
-# Video Showcase #2: Safety E-Stop
+# Video Showcase #1: Safety E-Stop
 The mobile companion application includes an Emergency Safety Stop, which can be enabled by pressing the "Enable Fan E-Stop" button on the mobile application.
 
 Once enabled, if enough device movement is detected, the fan system will shut down immediately (by sending a "-1" shut-off command to the WebSocket server), after which the fan system can be re-enabled by pressing the "Restart Fan System" button to send the "RESTART" command.
@@ -13,15 +10,17 @@ Once enabled, if enough device movement is detected, the fan system will shut do
 
 https://github.com/user-attachments/assets/e4aefa24-4d65-431b-95dd-5887364afc17
 
-
 ## Safety E-Stop Close
 Here the safety E-Stop shows the speed at which the shut-down occurs, which will help prevent accidental injury if someone accidentally falls or trips towards the fans.
 
 A small snippet at the beginning also shows how the interactive custom circle image updates in real time as the user interacts with the slider and colour wheel for each fan individually.
 
-https://github.com/user-attachments/assets/4482ef85-0fa0-46a5-928b-66956f27236e
+https://github.com/user-attachments/assets/bc63d974-ca08-4459-aae9-8a547bc15d5e
 
+# Video Showcase #2: Bluetooth Remote Support
+Shows how the bluetooth remote can be used to turn the images on both of the fan displays on/off
 
+https://github.com/user-attachments/assets/6e1bd12c-2f1c-4eac-a2cd-c213a5c6bc58
 
 # Steps on how to use
 ### Setting up the board
@@ -34,11 +33,9 @@ AsyncTCP by ESP32Async 3.4.9
 
 ESPAsyncWebServer by ESP32Async 3.8.1
 
-
 # Default configurations used (can be changed if needed, please see the final heading)
 ## Hardware
 ![Hardware configuration Final_page](https://github.com/user-attachments/assets/4b55402b-b4bf-4689-ad56-7bb81c7a7709)
-
 
 ## Software
 Creates a open WiFi access point "Holo3D" with a WebSockets server accessible at 192.168.4.1 on port 80. (can be changed in "HardwareSoftwareConfig.ino" or "WiFiConfig.h" for more advanced functionality)
