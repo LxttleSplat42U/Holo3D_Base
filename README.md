@@ -18,7 +18,7 @@ ESPAsyncWebServer by ESP32Async 3.8.1
 
 # Default configurations used (can be changed if needed, please see the final heading)
 ## Hardware
-![Hardware configuration Final_page-0001](https://github.com/user-attachments/assets/2976acf9-732c-4617-89a8-1aaad24e6aa9)
+![Hardware configuration Final_page](https://github.com/user-attachments/assets/4b55402b-b4bf-4689-ad56-7bb81c7a7709)
 
 
 ## Software
