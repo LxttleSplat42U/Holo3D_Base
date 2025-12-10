@@ -1,5 +1,7 @@
+Created by: SP Botes for my 2025 skripsie project
+
 # Holo3D_Base
-Main Fan Base ESP32 (C6)
+Code for the main fan fase ESP32 (C6), which hosts the WebSocket server for all of the 3D Holographic fan displays
 
 # Video Showcase #1: Safety E-Stop
 The mobile companion application includes an Emergency Safety Stop, which can be enabled by pressing the "Enable Fan E-Stop" button on the mobile application.
