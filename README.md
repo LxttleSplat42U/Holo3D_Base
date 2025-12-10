@@ -1,4 +1,7 @@
+# Project Video Showcase
 Created by: SP Botes for my 2025 skripsie project
+
+https://github.com/user-attachments/assets/740bef9e-0744-42d1-b641-8f48e9746031
 
 # Holo3D_Base
 Code for the main fan fase ESP32 (C6), which hosts the WebSocket server for all of the 3D Holographic fan displays
