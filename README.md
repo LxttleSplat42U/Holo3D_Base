@@ -1,5 +1,6 @@
 # Project Video Showcase
 Created by: SP Botes for my 2025 skripsie project
+- My full project report can be downloaded and viewed as a PDF under the `Report` folder of this repository
 
 https://github.com/user-attachments/assets/740bef9e-0744-42d1-b641-8f48e9746031
 
@@ -8,7 +9,7 @@ https://github.com/user-attachments/assets/740bef9e-0744-42d1-b641-8f48e9746031
 - Code for the other base and fan clients and can be found at https://github.com/LxttleSplat42U/Holo3D_Base_Client and https://github.com/LxttleSplat42U/Fan_Blade respectively
 - For a step-by-step assembly guide, please refer to the `Build.md` file
 - For steps on how to install the standalone mobile companion application, please refer to the following repositories `README.md` file at https://github.com/LxttleSplat42U/holo3d
-- My full project report can be downloaded and viewed as a PDF under the `Report` folder of this repository
+
 
 # Video Showcase #1: Safety E-Stop
 The mobile companion application includes an Emergency Safety Stop, which can be enabled by pressing the "Enable Fan E-Stop" button on the mobile application.
